@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { loadJewelleryDataset } from '../utils/csvLoader.js';
 import { cosineSimilarity } from '../utils/cosineSimilarity.js';
 import {
@@ -43,9 +44,23 @@ class RecommendationService {
       throw new Error('No earrings found in dataset. Cannot initialize recommendations.');
     }
 
-    // 2. Pre-warm model and precompute earring embeddings
-    await initEmbeddingModel();
-    this.earringEmbeddings = await precomputeEarringEmbeddings(rawEarrings);
+    // 2. Precompute or load cached earring embeddings
+    const cachedEmbeddingsPath = path.join(path.dirname(this.datasetPath), 'earring_embeddings.json');
+    if (fs.existsSync(cachedEmbeddingsPath)) {
+      console.log('[RecommendationService] Loading precomputed earring embeddings from JSON cache...');
+      const rawCache = JSON.parse(fs.readFileSync(cachedEmbeddingsPath, 'utf-8'));
+      this.earringEmbeddings = rawCache.map((item) => ({
+        id: item.id,
+        product_type: item.product_type,
+        image_file: item.image_file,
+        image_url: item.image_url,
+        embedding: new Float32Array(item.embedding),
+      }));
+      console.log(`[RecommendationService] Loaded ${this.earringEmbeddings.length} cached earring embeddings.`);
+    } else {
+      await initEmbeddingModel();
+      this.earringEmbeddings = await precomputeEarringEmbeddings(rawEarrings);
+    }
 
     this.isReady = true;
     console.log('[RecommendationService] Recommendation Service is ready!');
