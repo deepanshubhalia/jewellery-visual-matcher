@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Upload, CheckCircle2 } from 'lucide-react';
 import NecklaceCard from './NecklaceCard.jsx';
 
 export default function NecklaceSelector({
@@ -69,7 +69,6 @@ export default function NecklaceSelector({
           className={`selector-tab-btn ${activeTab === 'inventory' ? 'active' : ''}`}
           onClick={() => setActiveTab('inventory')}
         >
-          <Sparkles size={16} />
           <span>Curated Inventory ({necklaces.length})</span>
         </button>
 
