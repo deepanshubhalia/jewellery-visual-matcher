@@ -33,7 +33,7 @@ export default function App() {
     } catch (err) {
       console.error('Failed to load necklaces:', err);
       setErrorMessage(
-        'Unable to connect to the backend server. Please make sure the backend is running on http://localhost:5000.'
+        'Unable to connect to the backend server. Please make sure the backend is running on http://localhost:5005.'
       );
     } finally {
       setIsLoadingNecklaces(false);

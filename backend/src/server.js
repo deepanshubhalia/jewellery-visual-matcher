@@ -15,8 +15,9 @@ const rootDir = path.resolve(__dirname, '..');
 dotenv.config({ path: path.join(rootDir, '.env') });
 
 const app = express();
-const PORT = process.env.PORT || 5001;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const PORT = process.env.PORT || 5005;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3001';
+
 
 const datasetPath = process.env.DATASET_PATH
   ? path.resolve(rootDir, process.env.DATASET_PATH)

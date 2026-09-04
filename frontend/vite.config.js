@@ -3,12 +3,13 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiUrl = env.VITE_API_URL || 'http://localhost:5001';
+  const apiUrl = env.VITE_API_URL || 'http://localhost:5005';
 
   return {
     plugins: [react()],
     server: {
-      port: 5173,
+      host: '0.0.0.0',
+      port: 3001,
       proxy: {
         '/api': {
           target: apiUrl,
