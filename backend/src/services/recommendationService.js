@@ -12,6 +12,7 @@ class RecommendationService {
   constructor() {
     this.isReady = false;
     this.necklaces = [];
+    this.necklaceEmbeddings = {};
     this.earringEmbeddings = [];
     this.datasetPath = '';
     this.imagesPath = '';
@@ -62,6 +63,17 @@ class RecommendationService {
       this.earringEmbeddings = await precomputeEarringEmbeddings(rawEarrings);
     }
 
+    // Load precomputed necklace embeddings for instant visual matching
+    const cachedNecklacesPath = path.join(path.dirname(this.datasetPath), 'necklace_embeddings.json');
+    if (fs.existsSync(cachedNecklacesPath)) {
+      const rawNecklaces = JSON.parse(fs.readFileSync(cachedNecklacesPath, 'utf-8'));
+      this.necklaceEmbeddings = {};
+      for (const [id, emb] of Object.entries(rawNecklaces)) {
+        this.necklaceEmbeddings[id] = new Float32Array(emb);
+      }
+      console.log(`[RecommendationService] Loaded ${Object.keys(this.necklaceEmbeddings).length} precomputed necklace embeddings.`);
+    }
+
     this.isReady = true;
     console.log('[RecommendationService] Recommendation Service is ready!');
   }
@@ -95,8 +107,13 @@ class RecommendationService {
 
     const startTime = Date.now();
 
-    // 1. Generate necklace embedding on the fly
-    const necklaceEmbedding = await generateImageEmbedding(necklaceImageInput);
+    // 1. Check if we have precomputed embedding for this necklace or generate on the fly
+    let necklaceEmbedding;
+    if (meta.id && this.necklaceEmbeddings && this.necklaceEmbeddings[meta.id]) {
+      necklaceEmbedding = this.necklaceEmbeddings[meta.id];
+    } else {
+      necklaceEmbedding = await generateImageEmbedding(necklaceImageInput);
+    }
 
     // 2. Calculate cosine similarity against all 15 cached earrings
     const scoredEarrings = this.earringEmbeddings.map((earring) => {

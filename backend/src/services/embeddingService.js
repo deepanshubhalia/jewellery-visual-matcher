@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import sharp from 'sharp';
 import { pipeline, env, RawImage } from '@xenova/transformers';
 import { normalizeVector } from '../utils/cosineSimilarity.js';
 
@@ -51,13 +52,22 @@ export async function generateImageEmbedding(imageInput) {
 
   let rawImage;
   if (Buffer.isBuffer(imageInput)) {
-    const blob = new Blob([imageInput]);
+    const resizedBuffer = await sharp(imageInput)
+      .resize(224, 224, { fit: 'inside' })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+    const blob = new Blob([resizedBuffer]);
     rawImage = await RawImage.fromBlob(blob);
   } else if (typeof imageInput === 'string') {
     if (!fs.existsSync(imageInput)) {
       throw new Error(`Image file not found at: ${imageInput}`);
     }
-    rawImage = await RawImage.read(imageInput);
+    const resizedBuffer = await sharp(imageInput)
+      .resize(224, 224, { fit: 'inside' })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+    const blob = new Blob([resizedBuffer]);
+    rawImage = await RawImage.fromBlob(blob);
   } else {
     throw new Error('Unsupported image input format. Expected string path or Buffer.');
   }
