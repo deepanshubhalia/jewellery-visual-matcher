@@ -57,13 +57,6 @@ class RecommendationService {
         embedding: new Float32Array(item.embedding),
       }));
       console.log(`[RecommendationService] Loaded ${this.earringEmbeddings.length} cached earring embeddings.`);
-
-      // Pre-warm embedding model in background so first recommendation request is instant
-      initEmbeddingModel().then(() => {
-        console.log('[RecommendationService] Pretrained model pre-warmed successfully and cached in memory.');
-      }).catch((err) => {
-        console.error('[RecommendationService] Pre-warm failed:', err.message);
-      });
     } else {
       await initEmbeddingModel();
       this.earringEmbeddings = await precomputeEarringEmbeddings(rawEarrings);
