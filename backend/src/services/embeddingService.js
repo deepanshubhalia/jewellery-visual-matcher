@@ -1,10 +1,16 @@
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { pipeline, env, RawImage } from '@xenova/transformers';
 import { normalizeVector } from '../utils/cosineSimilarity.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const modelsDir = path.resolve(__dirname, '..', '..', 'models');
+
 // Configure transformers cache and environment
+env.localModelPath = modelsDir;
 env.allowLocalModels = true;
 env.useBrowserCache = false;
 
