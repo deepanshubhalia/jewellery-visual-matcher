@@ -81,11 +81,11 @@ app.use((err, req, res, next) => {
 // Start server & initialize AI recommendation engine
 export async function startServer(port = PORT) {
   try {
-    const server = app.listen(port, () => {
+    const server = app.listen(port, '0.0.0.0', () => {
       console.log(`====================================================`);
       console.log(`  Jewellery Recommendation API Server`);
-      console.log(`  Running at: http://localhost:${port}`);
-      console.log(`  Static Images: http://localhost:${port}/images/`);
+      console.log(`  Running at: http://0.0.0.0:${port}`);
+      console.log(`  Static Images: http://0.0.0.0:${port}/images/`);
       console.log(`====================================================`);
     });
 
